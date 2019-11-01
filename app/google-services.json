@@ -1,0 +1,48 @@
+  {
+  "project_info": {
+    "project_number": "699585831691",
+    "firebase_url": "https://sapidiner-c2c3e.firebaseio.com",
+    "project_id": "sapidiner-c2c3e",
+    "storage_bucket": "sapidiner-c2c3e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:699585831691:android:2bee54666e38bd31b4b80e",
+        "android_client_info": {
+          "package_name": "com.example.sapidiner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "699585831691-93fo361qcktvq0m3lh0m5cvd5c2s465a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sapidiner",
+            "certificate_hash": "4c4a5b65f8e5b39b7b0b57b2b0bcc6df6dc0f2bd"
+          }
+        },
+        {
+          "client_id": "699585831691-f85b0hmipqo3vse3bm8u4out8bt97c2o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIE68sbTipPfoltF904YJyIGiuBtxoWm8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "699585831691-f85b0hmipqo3vse3bm8u4out8bt97c2o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

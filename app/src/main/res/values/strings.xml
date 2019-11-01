@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SapiDiner</string>
+    <string name="loginTitle">Login</string>
+    <string name="rememberMe">"Remember me"</string>
+    <string name ="loginButton">"LOGIN"</string>
+    <string name ="etPhone">"Phone Number"</string>
+    <string name ="etPassword">"Password"</string>
 </resources>
