@@ -16,8 +16,7 @@ public class FirebaseDatabaseManager {
         static FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         //TODO other references
 
-        public static void addNewUser(User user) {
-            String key = usersReference.push().getKey();
+        public static void addNewUser(String key,User user) {
             usersReference.child(key).setValue(user);
         }
 

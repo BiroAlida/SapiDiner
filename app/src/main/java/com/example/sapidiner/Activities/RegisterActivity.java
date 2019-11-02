@@ -23,11 +23,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends AppCompatActivity {
     private EditText firstNameInput, lastNameInput, phoneInput, verificationCode;
     private String firstName, lastName, phone, verificationId;
     private Button registrationButton;
@@ -47,7 +50,24 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         lastNameInput = findViewById(R.id.lastName);
         phoneInput = findViewById(R.id.phoneNumber);
         registrationButton = findViewById(R.id.registrationButton);
-        registrationButton.setOnClickListener(this);
+        registrationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateInputs()){
+                    checkIfRegistered(new FirebaseCallback(){
+                        @Override
+                        public void onCallback(boolean isRegistered) {
+                            if (isRegistered){
+                                Snackbar.make(findViewById(R.id.viewContainer), getString(R.string.registrationError), Snackbar.LENGTH_SHORT).show();
+                            } else {
+                                sendVerificationCode();
+                                showDialog();
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -67,16 +87,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 verificationId = s;
             }
         };
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.equals(registrationButton)){
-            if (validateInputs()){
-                sendVerificationCode();
-                showDialog();
-            }
-        }
     }
 
     private boolean validateInputs() {
@@ -101,17 +111,33 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             phoneInput.requestFocus();
             return false;
         }
-
-        if (checkIfRegistered()){
-            return false;
-        }
-
         return true;
     }
 
-    private boolean checkIfRegistered() {
-        //todo
+    private boolean checkIfRegistered(final FirebaseCallback firebaseCallback) {
+        DatabaseReference userRef = FirebaseDatabaseManager.Instance.getUsersReference();
+        userRef.orderByChild("phone").equalTo(phone).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+                    //phone number is already registered
+                    firebaseCallback.onCallback(true);
+                } else {
+                    firebaseCallback.onCallback(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         return false;
+    }
+
+    private interface FirebaseCallback{
+        void onCallback(boolean isRegistered);
     }
 
     private void sendVerificationCode() {
@@ -160,20 +186,23 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void registerWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        FirebaseDatabaseManager.Instance.addNewUser(new User(firstName,lastName,phone,0));
         FirebaseDatabaseManager.Instance.getFirebaseAuth().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
+                    //add to database
+                    String key = task.getResult().getUser().getUid();
+                    FirebaseDatabaseManager.Instance.addNewUser(key, new User(firstName,lastName,phone,0));
+
+                    //login user
                     Intent intent = new Intent(RegisterActivity.this, MenuActivity.class);
                     startActivity(intent);
                 } else {
                     if (task.getException() instanceof FirebaseAuthInvalidCredentialsException){
-                        Snackbar.make(findViewById(R.id.viewContainer),"Invalid code",Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.viewContainer),getString(R.string.validationCodeError),Snackbar.LENGTH_SHORT).show();
                     }
                 }
             }
         });
-
     }
 }

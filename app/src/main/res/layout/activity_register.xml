@@ -13,42 +13,46 @@
         android:layout_alignParentTop="true"
         android:textAlignment="center"
         android:textSize="30sp"
+        android:layout_marginTop="60dp"
         android:text="@string/registrationTitle" />
 
     <EditText
         android:id="@+id/firstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/registrationTitle"
+        android:layout_below="@id/registrationTitle"
+        android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:hint="@string/firstName"
-        android:inputType="textPersonName"
-        android:padding="5dp" />
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/lastName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/firstName"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:hint="@string/lastName"
-        android:inputType="textPersonName"
-        android:padding="5dp" />
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/phoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lastName"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         android:hint="@string/phoneNumber"
-        android:padding="5dp"
         android:inputType="phone" />
 
     <Button

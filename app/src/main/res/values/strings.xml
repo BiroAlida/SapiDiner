@@ -10,9 +10,10 @@
     <string name="verifyPhoneNumber">"Ellenőrző kód megadása:</string>
     <string name="send">"Küldés"</string>
     <string name="cancel">"Mégse"</string>
-    <string name="nameInputError"></string>
-    <string name="phoneInputError"></string>
-    <string name="validationCodeError"></string>
+    <string name="nameInputError">"A mező kitöltése kötelező"</string>
+    <string name="phoneInputError">"A megadott telefonszám nem érvényes"</string>
+    <string name="validationCodeError">"Helytelen ellenőrző kód"</string>
+    <string name="registrationError">"Ezzel a telefonszámmal már regisztráltak"</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
