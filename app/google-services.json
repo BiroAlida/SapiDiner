@@ -1,4 +1,4 @@
-  {
+{
   "project_info": {
     "project_number": "699585831691",
     "firebase_url": "https://sapidiner-c2c3e.firebaseio.com",
@@ -14,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "699585831691-oj01uc5kvh50ejgb4sdahfsbqmvifn55.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sapidiner",
+            "certificate_hash": "adee4936290907fdc1b83ac5c9178caf8388bfc3"
+          }
+        },
         {
           "client_id": "699585831691-93fo361qcktvq0m3lh0m5cvd5c2s465a.apps.googleusercontent.com",
           "client_type": 1,

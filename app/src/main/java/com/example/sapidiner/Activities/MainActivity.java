@@ -1,4 +1,4 @@
-package com.example.sapidiner;
+package com.example.sapidiner.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,17 +11,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.example.sapidiner.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private DatabaseReference databaseUsers;
-    private Button btn_register, btn_login;
+    private Button btn_login;
+    private TextView tw_register;
     private EditText et_loginPhone, et_password;
     private String phoneNum, password;
     private CheckBox cb;
@@ -39,12 +38,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_login = findViewById(R.id.button_login);
         et_loginPhone = findViewById(R.id.editText_phoneNumber);
         et_password = findViewById(R.id.editText_password);
-        cb = (CheckBox) findViewById(R.id.checkBox);
-
-        databaseUsers = FirebaseDatabase.getInstance().getReference();
-        databaseUsers.child("client").setValue("client");
+        cb = findViewById(R.id.checkBox);
+        tw_register = findViewById(R.id.tw_register);
 
         btn_login.setOnClickListener(this);
+        tw_register.setOnClickListener(this);
 
 
         sharedPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
@@ -61,40 +59,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.button_login:
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(et_loginPhone.getWindowToken(), 0);
 
-        if (v == btn_login) {
-
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(et_loginPhone.getWindowToken(), 0);
-
-            phoneNum = et_loginPhone.getText().toString().trim();
-            password = et_password.getText().toString().trim();
+                phoneNum = et_loginPhone.getText().toString().trim();
+                password = et_password.getText().toString().trim();
 
 
-            if (phoneNum.isEmpty()) {
-                et_loginPhone.setError("Phone number is required");
-                et_loginPhone.requestFocus();
-                return;
-            }
-            if (password.isEmpty()) {
-                et_password.setError("Password is required");
-                et_password.requestFocus();
-                return;
-            }
+                if (phoneNum.isEmpty()) {
+                    et_loginPhone.setError("Phone number is required");
+                    et_loginPhone.requestFocus();
+                    return;
+                }
+                if (password.isEmpty()) {
+                    et_password.setError("Password is required");
+                    et_password.requestFocus();
+                    return;
+                }
 
-            if (cb.isChecked()) {
-                editor.putBoolean("saveLogin", true);
-                editor.putString("userphone", phoneNum);
-                editor.putString("password", password);
+                if (cb.isChecked()) {
+                    editor.putBoolean("saveLogin", true);
+                    editor.putString("userphone", phoneNum);
+                    editor.putString("password", password);
 
-                editor.commit();
-            } else {
-                editor.clear();
-                editor.commit();
-            }
+                    editor.commit();
+                } else {
+                    editor.clear();
+                    editor.commit();
+                }
 
-            startActivity(new Intent(MainActivity.this, MenuActivity.class));
-            finish();
+                startActivity(new Intent(MainActivity.this, MenuActivity.class));
+                break;
+            case R.id.tw_register:
+                startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+                break;
         }
     }
 }

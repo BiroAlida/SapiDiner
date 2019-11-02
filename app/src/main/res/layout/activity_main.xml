@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -27,7 +27,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:hint="@string/etPhone"
+        android:hint="@string/phoneNumber"
         android:inputType="phone"/>
 
     <EditText
@@ -40,7 +40,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:hint="@string/etPhone"
+        android:hint="@string/password"
         android:inputType="textPassword" />
 
     <Button
@@ -48,14 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/editText_password"
-        android:layout_marginStart="75dp"
-        android:layout_marginLeft="70dp"
         android:layout_marginTop="70dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="@string/loginButton"
+        android:text="@string/loginTitle"
         android:layout_centerHorizontal="true"/>
 
     <CheckBox
@@ -66,6 +62,14 @@
         android:layout_marginTop="35dp"
         android:text="@string/rememberMe" />
 
+    <TextView
+        android:id="@+id/tw_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_login"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:text="@string/registrationTitle" />
 
 
 </RelativeLayout>

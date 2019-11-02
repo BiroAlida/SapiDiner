@@ -1,8 +1,10 @@
-package com.example.sapidiner;
+package com.example.sapidiner.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.sapidiner.R;
 
 public class MenuActivity extends AppCompatActivity {
 

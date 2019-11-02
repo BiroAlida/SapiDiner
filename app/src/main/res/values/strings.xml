@@ -1,8 +1,20 @@
 <resources>
     <string name="app_name">SapiDiner</string>
-    <string name="loginTitle">Login</string>
-    <string name="rememberMe">"Remember me"</string>
-    <string name ="loginButton">"LOGIN"</string>
-    <string name ="etPhone">"Phone Number"</string>
-    <string name ="etPassword">"Password"</string>
+    <string name="loginTitle">Bejelentkezés</string>
+    <string name="rememberMe">"Emlékezz rám"</string>
+    <string name="phoneNumber">Telefonszám</string>
+    <string name="password">Jelszó</string>
+    <string name="firstName">Vezetéknév</string>
+    <string name="lastName">Keresztnév</string>
+    <string name="registrationTitle">Regisztráció</string>
+    <string name="verifyPhoneNumber">"Ellenőrző kód megadása:</string>
+    <string name="send">"Küldés"</string>
+    <string name="cancel">"Mégse"</string>
+    <string name="nameInputError">"A mező kitöltése kötelező"</string>
+    <string name="phoneInputError">"A megadott telefonszám nem érvényes"</string>
+    <string name="validationCodeError">"Helytelen ellenőrző kód"</string>
+    <string name="registrationError">"Ezzel a telefonszámmal már regisztráltak"</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
