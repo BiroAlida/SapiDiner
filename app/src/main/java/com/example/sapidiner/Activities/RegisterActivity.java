@@ -136,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
         return false;
     }
 
-    private interface FirebaseCallback{
+    interface FirebaseCallback{
         void onCallback(boolean isRegistered);
     }
 
