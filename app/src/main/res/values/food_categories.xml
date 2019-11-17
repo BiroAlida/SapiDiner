@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="foodCategories">
+        <item>Válassz kategóriát!</item>
+        <item>Leves</item>
+        <item>Köret</item>
+        <item>Sült</item>
+        <item>Saláta</item>
+        <item>Desszert</item>
+    </string-array>
+</resources>

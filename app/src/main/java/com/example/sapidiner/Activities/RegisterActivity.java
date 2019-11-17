@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.sapidiner.Classes.User;
-import com.example.sapidiner.FirebaseDatabaseManager;
+import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
