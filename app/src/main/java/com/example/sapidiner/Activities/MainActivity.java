@@ -36,16 +36,18 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btn_login;
     private TextView tw_register;
-    private EditText et_loginPhone,verificationCode;
+    private EditText et_password, et_loginEmail;
     private CheckBox cb;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private Boolean saveLogin;
     private FirebaseAuth auth;
-    private String number, verification_code;
+    private String number, verification_code, email, password;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference rootRef, itemsRef;
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
 
@@ -54,67 +56,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         btn_login = findViewById(R.id.button_login);
-        et_loginPhone = findViewById(R.id.editText_phoneNumber);
-        cb = findViewById(R.id.checkBox);
+        et_loginEmail = findViewById(R.id.editText_email);
+        et_password = findViewById(R.id.editTextPassword);
         tw_register = findViewById(R.id.tw_register);
         auth = FirebaseAuth.getInstance();
 
 
-        btn_login.setOnClickListener(new View.OnClickListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        rootRef = firebaseDatabase.getReference();
+        itemsRef = rootRef.child("Clients");
+
+
+        btn_login.setOnClickListener(this);
+
+
+        tw_register.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-                number = et_loginPhone.getText().toString();
-
-               /* if (cb.isChecked()) {
-                    editor.putBoolean("saveLogin", true);
-                    editor.putString("userphone", number);
-
-                    editor.commit();
-                } else {
-                    editor.clear();
-                    editor.commit();
-                }*/
-
-                send_sms();
-                showDialog();
-
-            }
-        });
-
-
-        sharedPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-
-        saveLogin = sharedPreferences.getBoolean("saveLogin", false);
-        if (saveLogin == true) {
-
-            et_loginPhone.setText(sharedPreferences.getString("userphone", ""));
-            cb.setChecked(true);
-        }
-
-       mCallback  = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-           @Override
-           public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-
-           }
-
-           @Override
-           public void onVerificationFailed(@NonNull FirebaseException e) {
-
-           }
-
-           @Override
-           public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-               super.onCodeSent(s, forceResendingToken);
-               verification_code = s;
-               Toast.makeText(getApplicationContext(),"Code sent to the number",Toast.LENGTH_SHORT).show();
-           }
-       };
-
-        tw_register.setOnClickListener(new View.OnClickListener(){
-
             public void onClick(View v) {
 
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
@@ -122,89 +82,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        sharedPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-
-        saveLogin = sharedPreferences.getBoolean("saveLogin", false);
-        if (saveLogin == true) {
-            et_loginPhone.setText(sharedPreferences.getString("userphone", ""));
-
-            cb.setChecked(true);
-        }
-
     }
 
-    private void send_sms() {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+4" + number,
-                60,
-                TimeUnit.SECONDS,
-                this,
-                mCallback);
-    }
+    public void onClick(final View v) {
+        if (v == btn_login) {
+            email = et_loginEmail.getText().toString().trim();
+            password = et_password.getText().toString().trim();
+            if(email.isEmpty())
+            {
+                et_loginEmail.setError(getString(R.string.regNameError));
+                et_loginEmail.requestFocus();
+                return;
+            }
+            if(password.isEmpty())
+            {
+                et_password.setError(getString(R.string.regEmailError));
+                et_password.requestFocus();
+                return;
+            }
 
-
-    public void signInWithPhone(PhoneAuthCredential credintial)
-    {
-        auth.signInWithCredential(credintial)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if(task.isSuccessful())
-                        {
-                            //Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                            Intent i  = new Intent(MainActivity.this, MenuActivity.class);
-                            startActivity(i);
-                        }
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(!task.isSuccessful())
+                    {
+                        Snackbar error = Snackbar.make(v, getString(R.string.loginError), Snackbar.LENGTH_SHORT);
+                       // error.getView().setBackgroundColor(getResources().getColor(R.color.RED));
+                        TextView snackbarText = error.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+                       // snackbarText.setBackgroundColor(getResources().getColor(R.color.RED));
+                        error.show();
                     }
-                });
-    }
+                    else{
+                        doSomethingElse();
+                    }
+                }
+            });
 
-
-    private void showDialog() {
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle(getString(R.string.verifyPhoneNumber));
-
-        verificationCode = new EditText(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        verificationCode.setLayoutParams(layoutParams);
-
-        alertDialog.setView(verificationCode);
-        alertDialog.setPositiveButton(getString(R.string.send), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                verifyCode();
-            }
-        });
-        alertDialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        alertDialog.show();
-    }
-
-    private void verifyCode(){
-        String code = verificationCode.getText().toString().trim();
-        if (code.isEmpty() || code.length() < 6){
-            verificationCode.setError(getString(R.string.validationCodeError));
-            verificationCode.requestFocus();
-        } else {
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verification_code ,code);
-            //registerWithPhoneAuthCredential(credential);
-            verifyPhoneNumber(verification_code, code);
         }
     }
 
-    public void verifyPhoneNumber(String verifyCode, String input_code)
-    {
-        PhoneAuthCredential credintial  = PhoneAuthProvider.getCredential(verifyCode, input_code);
-        signInWithPhone(credintial);
+    public void doSomethingElse() {
+        startActivity(new Intent(MainActivity.this, MenuActivity.class));
+        finish();
     }
-
 
 }
+

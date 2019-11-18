@@ -7,10 +7,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sapidiner.Classes.User;
 import com.example.sapidiner.FirebaseDatabaseManager;
@@ -20,189 +24,124 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-public class RegisterActivity extends AppCompatActivity {
-    private EditText firstNameInput, lastNameInput, phoneInput, verificationCode;
-    private String firstName, lastName, phone, verificationId;
-    private Button registrationButton;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    private EditText et_email, et_password, et_firstName, et_lastname, et_phone;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        initVariables();
+
+        et_firstName = (EditText) findViewById(R.id.firstName);
+        et_lastname = (EditText) findViewById(R.id.lastName);
+        et_email = (EditText) findViewById(R.id.editText_useremail);
+        et_password = (EditText) findViewById(R.id.editText_password);
+        et_phone = (EditText) findViewById(R.id.phoneNumber);
+        mAuth = FirebaseAuth.getInstance();
+
+
+        findViewById(R.id.registrationButton).setOnClickListener(this);
 
     }
 
-    private void initVariables() {
-        firstNameInput = findViewById(R.id.firstName);
-        lastNameInput = findViewById(R.id.lastName);
-        phoneInput = findViewById(R.id.phoneNumber);
-        registrationButton = findViewById(R.id.registrationButton);
-        registrationButton.setOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mAuth.getCurrentUser() != null) {
+            //handle the already login user
+        }
+    }
+
+    private void registerUser() {
+        final String firstname = et_firstName.getText().toString().trim();
+        final String lastname = et_lastname.getText().toString().trim();
+        final String email = et_email.getText().toString().trim();
+        final String password = et_password.getText().toString().trim();
+        final String phone = et_phone.getText().toString().trim();
+
+        if (firstname.isEmpty()) {
+            et_firstName.setError("missing information");
+            et_firstName.requestFocus();
+            return;
+        }
+
+        if (lastname.isEmpty()) {
+            et_lastname.setError("missing information");
+            et_lastname.requestFocus();
+            return;
+        }
+
+        if (phone.isEmpty()) {
+            et_phone.setError("missing information");
+            et_phone.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            et_email.setError("invalid email");
+            et_email.requestFocus();
+            return;
+        }
+
+
+        if (password.length() < 6) {
+            et_password.setError("invalid password");
+            et_password.requestFocus();
+            return;
+        }
+
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onClick(View v) {
-                if (validateInputs()){
-                    checkIfRegistered(new FirebaseCallback(){
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // we will store the additional fields in firebase db
+                    User user = new User(firstname, lastname, phone, email, password, 0);
+                    FirebaseDatabase.getInstance().getReference("Clients").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onCallback(boolean isRegistered) {
-                            if (isRegistered){
-                                Snackbar.make(findViewById(R.id.viewContainer), getString(R.string.registrationError), Snackbar.LENGTH_SHORT).show();
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Intent loginIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                                startActivity(loginIntent);
                             } else {
-                                sendVerificationCode();
-                                showDialog();
+                                Toast.makeText(RegisterActivity.this, "something went wrong", Toast.LENGTH_SHORT).show();
+                                //Snackbar error = Snackbar.make(findViewById(R.id.container), getString(R.string.registerError), Snackbar.LENGTH_SHORT);
+                                //error.getView().setBackgroundColor(getResources().getColor(R.color.RED));
+                                // TextView snackbarText = error.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+                                // snackbarText.setBackgroundColor(getResources().getColor(R.color.RED));
+                                //error.show();
                             }
                         }
                     });
-                }
-            }
-        });
-
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-            @Override
-            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-
-            }
-
-            @Override
-            public void onVerificationFailed(@NonNull FirebaseException e) {
-                Snackbar.make(findViewById(R.id.viewContainer), e.getMessage(), Snackbar.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                super.onCodeSent(s, forceResendingToken);
-                verificationId = s;
-            }
-        };
-    }
-
-    private boolean validateInputs() {
-        firstName = firstNameInput.getText().toString().trim();
-        lastName = lastNameInput.getText().toString().trim();
-        phone = phoneInput.getText().toString().trim();
-
-        if (firstName.isEmpty()){
-            firstNameInput.setError(getString(R.string.nameInputError));
-            firstNameInput.requestFocus();
-            return false;
-        }
-
-        if (lastName.isEmpty()){
-            lastNameInput.setError(getString(R.string.nameInputError));
-            lastNameInput.requestFocus();
-            return false;
-        }
-
-        if (phone.isEmpty() || phone.length() < 10){
-            phoneInput.setError(getString(R.string.phoneInputError));
-            phoneInput.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean checkIfRegistered(final FirebaseCallback firebaseCallback) {
-        DatabaseReference userRef = FirebaseDatabaseManager.Instance.getUsersReference();
-        userRef.orderByChild("phone").equalTo(phone).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null){
-                    //phone number is already registered
-                    firebaseCallback.onCallback(true);
                 } else {
-                    firebaseCallback.onCallback(false);
+                    //Toast.makeText(RegisterActivity.this,"something went wrong",Toast.LENGTH_LONG).show();
+                    Log.d("KKK", "hiba");
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
 
-        return false;
     }
 
-    interface FirebaseCallback{
-        void onCallback(boolean isRegistered);
-    }
-
-    private void sendVerificationCode() {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+4" + phone,
-                60,
-                TimeUnit.SECONDS,
-                this,
-                mCallbacks);
-    }
-
-    private void showDialog() {
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle(getString(R.string.verifyPhoneNumber));
-
-        verificationCode = new EditText(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        verificationCode.setLayoutParams(layoutParams);
-
-        alertDialog.setView(verificationCode);
-        alertDialog.setPositiveButton(getString(R.string.send), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                verifyCode();
-            }
-        });
-        alertDialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        alertDialog.show();
-    }
-
-    private void verifyCode(){
-        String code = verificationCode.getText().toString().trim();
-        if (code.isEmpty() || code.length() < 6){
-            verificationCode.setError(getString(R.string.validationCodeError));
-            verificationCode.requestFocus();
-        } else {
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId,code);
-            registerWithPhoneAuthCredential(credential);
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.registrationButton:
+                registerUser();
+                break;
         }
-    }
-
-    private void registerWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        FirebaseDatabaseManager.Instance.getFirebaseAuth().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
-                    //add to database
-                    String key = task.getResult().getUser().getUid();
-                    FirebaseDatabaseManager.Instance.addNewUser(key, new User(firstName,lastName,phone,0));
-
-                    //login user
-                    Intent intent = new Intent(RegisterActivity.this, MenuActivity.class);
-                    startActivity(intent);
-                } else {
-                    if (task.getException() instanceof FirebaseAuthInvalidCredentialsException){
-                        Snackbar.make(findViewById(R.id.viewContainer),getString(R.string.validationCodeError),Snackbar.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
     }
 }

@@ -18,7 +18,7 @@
         />
 
     <EditText
-        android:id="@+id/editText_phoneNumber"
+        android:id="@+id/editText_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
@@ -27,14 +27,16 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:hint="@string/phoneNumber"
-        android:inputType="phone"/>
+        android:hint="@string/userEmail"
+        android:inputType="textEmailAddress"/>
+
+
 
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText_phoneNumber"
+        android:layout_below="@+id/editText_email"
         android:layout_marginTop="120dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -45,7 +47,7 @@
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText_phoneNumber"
+        android:layout_below="@+id/editText_email"
         android:layout_marginTop="50dp"
         android:text="@string/rememberMe" />
 
@@ -57,6 +59,19 @@
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="@string/registrationTitle" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText_email"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginEnd="10dp"
+        android:inputType="textPassword"
+        android:hint="@string/editText_password"/>
 
 
 </RelativeLayout>
