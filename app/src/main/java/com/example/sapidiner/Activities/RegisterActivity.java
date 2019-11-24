@@ -2,39 +2,21 @@ package com.example.sapidiner.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.sapidiner.Classes.User;
-import com.example.sapidiner.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.concurrent.TimeUnit;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -116,15 +98,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Intent loginIntent = new Intent(RegisterActivity.this, MainActivity.class);
+                                Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                                 startActivity(loginIntent);
                             } else {
                                 Toast.makeText(RegisterActivity.this, "something went wrong", Toast.LENGTH_SHORT).show();
-                                //Snackbar error = Snackbar.make(findViewById(R.id.container), getString(R.string.registerError), Snackbar.LENGTH_SHORT);
-                                //error.getView().setBackgroundColor(getResources().getColor(R.color.RED));
-                                // TextView snackbarText = error.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-                                // snackbarText.setBackgroundColor(getResources().getColor(R.color.RED));
-                                //error.show();
+
                             }
                         }
                     });

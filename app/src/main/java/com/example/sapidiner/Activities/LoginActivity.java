@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sapidiner.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,7 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btn_login;
     private TextView tw_register;
     private EditText et_password, et_loginEmail;
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -107,13 +106,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(!task.isSuccessful())
                     {
                         Snackbar error = Snackbar.make(v, getString(R.string.loginError), Snackbar.LENGTH_SHORT);
-                       // error.getView().setBackgroundColor(getResources().getColor(R.color.RED));
+                        // error.getView().setBackgroundColor(getResources().getColor(R.color.RED));
                         TextView snackbarText = error.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-                       // snackbarText.setBackgroundColor(getResources().getColor(R.color.RED));
+                        // snackbarText.setBackgroundColor(getResources().getColor(R.color.RED));
                         error.show();
                     }
                     else{
-                        doSomethingElse();
+                        startActivity(new Intent(LoginActivity.this, OrderActivity.class));
+                        finish();
                     }
                 }
             });
@@ -121,10 +121,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void doSomethingElse() {
-        startActivity(new Intent(MainActivity.this, MenuActivity.class));
-        finish();
-    }
 
 }
 

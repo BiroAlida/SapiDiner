@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "699585831691-lchka3lhjb1khe0o7i0hfmlibmr4sdrs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sapidiner",
+            "certificate_hash": "8fdb36617e03cea6e07e8b90d55a9ac3706cb81d"
+          }
+        },
+        {
           "client_id": "699585831691-oj01uc5kvh50ejgb4sdahfsbqmvifn55.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
