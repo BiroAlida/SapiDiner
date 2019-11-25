@@ -44,7 +44,7 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
         {
             for(String ord : orders.get(position).getOrders())
             {
-                
+
                 o = o + space + ord;
             }
 
