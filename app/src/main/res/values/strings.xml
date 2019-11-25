@@ -38,4 +38,6 @@
     <string name="garnishList">Köretek</string>
     <string name="saladList">Saláták</string>
     <string name="dessertList">Desszertek</string>
+    <string name="loading">Betöltés…</string>
+    <string name="deleteFood">Ételek törlése</string>
 </resources>

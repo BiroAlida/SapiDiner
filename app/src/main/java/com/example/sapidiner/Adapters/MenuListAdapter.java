@@ -1,6 +1,8 @@
 package com.example.sapidiner.Adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sapidiner.R;
 
+
 import java.util.ArrayList;
 
 public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ListViewHolder> {
     private Context context;
     private ArrayList<String> foods;
+    public static ArrayList<String> selectedFoodItems = new ArrayList<>();
 
     public MenuListAdapter(Context context, ArrayList<String> foods) {
         this.context = context;
@@ -33,8 +37,23 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ListVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListViewHolder holder, final int position) {
         //todo image
+
+        holder.foodImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getBackground() == null){
+                    v.setBackgroundResource(R.drawable.photo_highlight);
+                    selectedFoodItems.add(foods.get(position));
+                } else {
+                    v.setBackgroundResource(0);
+                    selectedFoodItems.remove(foods.get(position));
+                }
+
+            }
+        });
+
         holder.foodName.setText(foods.get(position));
     }
 
@@ -43,14 +62,15 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ListVi
         return foods.size();
     }
 
+
     public class ListViewHolder extends RecyclerView.ViewHolder {
-        private TextView foodName;
         private ImageView foodImage;
+        private TextView foodName;
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
-            foodName = itemView.findViewById(R.id.foodName);
-            foodImage = itemView.findViewById(R.id.foodImage);
+            foodImage = itemView.findViewById(R.id.foodItemImage);
+            foodName = itemView.findViewById(R.id.foodItemName);
         }
     }
 }
