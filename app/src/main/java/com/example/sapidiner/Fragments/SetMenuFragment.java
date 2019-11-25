@@ -2,6 +2,7 @@ package com.example.sapidiner.Fragments;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.sapidiner.Adapters.MenuListAdapter;
+import com.example.sapidiner.Classes.FoodCategory;
 import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
 import com.example.sapidiner.Utilities;
@@ -47,9 +49,8 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
     private Uri imagePath;
     private String name, category;
     private AlertDialog uploadImageDialog;
-    private RecyclerView.Adapter soupListAdapter, meatListAdapter, garnishListAdapter, saladListAdapter, dessertListAdapter;
-    private ArrayList<String> soupList = new ArrayList<>(), meatList = new ArrayList<>(),
-    garnishList = new ArrayList<>(), saladList = new ArrayList<>(), dessertList = new ArrayList<>();
+    private ArrayList<FoodCategory> categories = new ArrayList<>();
+    private ProgressDialog loadingDialog;
 
     public SetMenuFragment() {
         // Required empty public constructor
@@ -62,44 +63,36 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         view = inflater.inflate(R.layout.fragment_set_menu, container, false);
         Button addFood = view.findViewById(R.id.addFood);
         addFood.setOnClickListener(this);
+        Button deleteFood = view.findViewById(R.id.deleteFood);
+        deleteFood.setOnClickListener(this);
 
-        initializeMenuView();
-        readDataFromFirebase();
+        loadingDialog = new ProgressDialog(getContext());
+        loadingDialog.setMessage(getString(R.string.loading));
+        loadingDialog.show();
+
+        readDataFromFirebase(new FirebaseCallback() {
+            @Override
+            public void onCallback() {
+                initializeMenuView();
+            }
+        });
 
         return view;
     }
 
-    private void readDataFromFirebase() {
-        soupList.clear(); meatList.clear(); garnishList.clear(); saladList.clear(); dessertList.clear();
+    private void readDataFromFirebase(final FirebaseCallback callback) {
         FirebaseDatabaseManager.Instance.getFoodsReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot category : dataSnapshot.getChildren()){
+                    FoodCategory foodCategory = new FoodCategory(category.getKey());
                     for (DataSnapshot food : category.getChildren()){
-                        switch (category.getKey()){
-                            case "Leves":
-                                soupList.add(food.getValue(String.class));
-                                soupListAdapter.notifyDataSetChanged();
-                                break;
-                            case "Sült":
-                                meatList.add(food.getValue(String.class));
-                                meatListAdapter.notifyDataSetChanged();
-                                break;
-                            case "Köret":
-                                garnishList.add(food.getValue(String.class));
-                                garnishListAdapter.notifyDataSetChanged();
-                                break;
-                            case "Desszert":
-                                dessertList.add(food.getValue(String.class));
-                                dessertListAdapter.notifyDataSetChanged();
-                                break;
-                            case "Saláta":
-                                saladList.add(food.getValue(String.class));
-                                saladListAdapter.notifyDataSetChanged();
-                                break;
-                        }
+                        foodCategory.addFood(food.getValue(String.class));
                     }
+                    categories.add(foodCategory);
                 }
+                loadingDialog.dismiss();
+                callback.onCallback();
             }
 
             @Override
@@ -107,10 +100,10 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
 
             }
         });
+
     }
 
     private void initializeMenuView() {
-
         RecyclerView soupListView = view.findViewById(R.id.soupList);
         RecyclerView meatListView = view.findViewById(R.id.meatList);
         RecyclerView garnishListView = view.findViewById(R.id.garnishList);
@@ -123,17 +116,25 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         dessertListView.setLayoutManager(new GridLayoutManager(getContext(),4));
         saladListView.setLayoutManager(new GridLayoutManager(getContext(),4));
 
-        soupListAdapter = new MenuListAdapter(getContext(), soupList);
-        meatListAdapter = new MenuListAdapter(getContext(), meatList);
-        garnishListAdapter = new MenuListAdapter(getContext(), garnishList);
-        dessertListAdapter = new MenuListAdapter(getContext(), dessertList);
-        saladListAdapter = new MenuListAdapter(getContext(), saladList);
-
-        soupListView.setAdapter(soupListAdapter);
-        meatListView.setAdapter(meatListAdapter);
-        dessertListView.setAdapter(dessertListAdapter);
-        garnishListView.setAdapter(garnishListAdapter);
-        saladListView.setAdapter(saladListAdapter);
+        for (FoodCategory category : categories){
+            switch(category.getName()){
+                case "Köret":
+                    garnishListView.setAdapter(new MenuListAdapter(getContext(), category.getFoods()));
+                    break;
+                case "Leves":
+                    soupListView.setAdapter(new MenuListAdapter(getContext(), category.getFoods()));
+                    break;
+                case "Sült":
+                    meatListView.setAdapter(new MenuListAdapter(getContext(), category.getFoods()));
+                    break;
+                case "Saláta":
+                    saladListView.setAdapter(new MenuListAdapter(getContext(), category.getFoods()));
+                    break;
+                case "Desszert":
+                    dessertListView.setAdapter(new MenuListAdapter(getContext(), category.getFoods()));
+                    break;
+            }
+        }
     }
 
     @Override
@@ -159,6 +160,20 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
                 loadImageFromGallery();
                 uploadImageDialog.dismiss();
                 break;
+            case R.id.deleteFood:
+                FirebaseDatabaseManager.Instance.deleteFoodsFromDatabase(MenuListAdapter.selectedFoodItems);
+                deleteFoods(MenuListAdapter.selectedFoodItems);
+        }
+    }
+
+    private void deleteFoods(ArrayList<String> selectedFoodItems) {
+        for (FoodCategory category : categories){
+            for (String food : selectedFoodItems){
+                if (category.getFoods().contains(food)){
+                    category.removeFood(food);
+                    initializeMenuView();
+                }
+            }
         }
     }
 
@@ -241,7 +256,7 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (validateInputs()){
                     FirebaseDatabaseManager.Instance.addFood(category, name);
-                    //FirebaseDatabaseManager.Instance.uploadImage(name,imagePath);
+                    FirebaseDatabaseManager.Instance.uploadImage(name,imagePath);
                 }
             }
         });
@@ -271,10 +286,10 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
             return false;
         }
 
-        //if (imageName.getText().toString().trim().isEmpty()){
-        //    Utilities.displayErrorSnackbar(dialogView,getString(R.string.photoError));
-        //    return false;
-        //}
+        if (imageName.getText().toString().trim().isEmpty()){
+           Utilities.displayErrorSnackbar(dialogView,getString(R.string.photoError));
+           return false;
+        }
 
         return true;
     }
@@ -287,5 +302,9 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private interface FirebaseCallback{
+        void onCallback();
     }
 }
