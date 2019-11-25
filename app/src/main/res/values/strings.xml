@@ -2,10 +2,13 @@
     <string name="app_name">SapiDiner</string>
     <string name="loginTitle">Bejelentkezés</string>
     <string name="rememberMe">"Emlékezz rám"</string>
-    <string name="phoneNumber">Telefonszám</string>
+    <string name="userEmail">Email</string>
     <string name="password">Jelszó</string>
+    <string name="phoneNumber">Telefonszám</string>
     <string name="firstName">Vezetéknév</string>
     <string name="lastName">Keresztnév</string>
+    <string name="editText_useremail">Email</string>
+    <string name="editText_password">Jelszó</string>
     <string name="registrationTitle">Regisztráció</string>
     <string name="verifyPhoneNumber">"Ellenőrző kód megadása:</string>
     <string name="send">"Küldés"</string>
@@ -14,6 +17,12 @@
     <string name="phoneInputError">"A megadott telefonszám nem érvényes"</string>
     <string name="validationCodeError">"Helytelen ellenőrző kód"</string>
     <string name="registrationError">"Ezzel a telefonszámmal már regisztráltak"</string>
+    <string name="regNameError">"A név mező kitöltése kötelező"</string>
+    <string name="regEmailError">"Az email mező kitöltése kötelező"</string>
+    <string name="loginError">"Érvénytelen felhasználónév vagy jelszó"</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="setMenu">Étlap szerkesztése</string>
     <string name="addFood">Étel hozzáadása</string>
     <string name="foodName">Étel neve</string>

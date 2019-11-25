@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.sapidiner.Classes.Orders;
 import com.example.sapidiner.Classes.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,14 @@ public class FirebaseDatabaseManager {
         static FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         static DatabaseReference foodsReference = database.getReference("Foods");
         static StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+
+        static DatabaseReference ordersReference = database.getReference("Orders");
+
+
+        public static void addNewOrder(String key, Orders order) {
+            ordersReference.child(key).setValue(order);
+        }
+
 
         public static void addNewUser(String key,User user) {
             usersReference.child(key).setValue(user);
