@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.OrderFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:id="@+id/foodList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/foodListTitle"
+            android:layout_below="@id/foodList"
             android:padding="20dp"/>
 
         <Button
@@ -59,4 +59,5 @@
             android:text="@string/deleteFood" />
 
     </RelativeLayout>
-</ScrollView>
+
+</RelativeLayout>

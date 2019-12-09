@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.sapidiner.Classes.Food;
 import com.example.sapidiner.Classes.Orders;
 import com.example.sapidiner.Classes.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +47,10 @@ public class FirebaseDatabaseManager {
             return firebaseAuth;
         }
 
+        public static StorageReference getStorageReference() {
+            return storageReference;
+        }
+
         public static FirebaseDatabase getDatabase() {
             return database;
         }
@@ -57,24 +62,24 @@ public class FirebaseDatabaseManager {
             return foodsReference;
         }
 
-        public static void addFood(String category, String name){
+        public static void addFood(Food food){
             String key = foodsReference.push().getKey();
-            foodsReference.child(category).child(key).setValue(name);
+            foodsReference.child(key).setValue(food);
         }
 
         public static void uploadImage(String name, Uri imagePath){
             storageReference.child(name).putFile(imagePath);
         }
 
-        public static void deleteFoodsFromDatabase(final ArrayList<String> foods){
-            foodsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        public static void deleteFoodsFromDatabase(final ArrayList<Food> foodList){
+            foodsReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot foodData : dataSnapshot.getChildren()){
-                        for (DataSnapshot categoryData : foodData.getChildren()){
-                            if (foods.contains(categoryData.getValue(String.class))){
-                                foodsReference.child(foodData.getKey()).child(categoryData.getKey()).removeValue();
-                            }
+                        Food food = foodData.getValue(Food.class);
+                        if (foodList.contains(food)){
+                            Log.d("foodD",food.getName());
+                            foodsReference.child(foodData.getKey()).removeValue();
                         }
                     }
                 }
