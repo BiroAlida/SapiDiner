@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         error.show();
                     }
                     else{
-                        startActivity(new Intent(LoginActivity.this, OrderActivity.class));
+                        startActivity(new Intent(LoginActivity.this,MenuActivity.class));
                         finish();
                     }
                 }
