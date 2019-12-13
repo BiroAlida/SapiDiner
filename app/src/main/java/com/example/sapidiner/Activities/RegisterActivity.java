@@ -58,32 +58,32 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         final String phone = et_phone.getText().toString().trim();
 
         if (firstname.isEmpty()) {
-            et_firstName.setError("missing information");
+            et_firstName.setError(getString(R.string.missingInfo));
             et_firstName.requestFocus();
             return;
         }
 
         if (lastname.isEmpty()) {
-            et_lastname.setError("missing information");
+            et_lastname.setError(getString(R.string.missingInfo));
             et_lastname.requestFocus();
             return;
         }
 
         if (phone.isEmpty()) {
-            et_phone.setError("missing information");
+            et_phone.setError(getString(R.string.missingInfo));
             et_phone.requestFocus();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            et_email.setError("invalid email");
+            et_email.setError(getString(R.string.invalidEmail));
             et_email.requestFocus();
             return;
         }
 
 
         if (password.length() < 6) {
-            et_password.setError("invalid password");
+            et_password.setError(getString(R.string.invalidPassword));
             et_password.requestFocus();
             return;
         }
@@ -93,7 +93,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // we will store the additional fields in firebase db
-                    User user = new User(firstname, lastname, phone, email, password, 0);
+                    String userId = mAuth.getCurrentUser().getUid();
+                    User user = new User(userId,firstname, lastname, phone, email, password, 0);
                     FirebaseDatabase.getInstance().getReference("Clients").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -101,14 +102,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                 Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                                 startActivity(loginIntent);
                             } else {
-                                Toast.makeText(RegisterActivity.this, "something went wrong", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, getString(R.string.regFailed), Toast.LENGTH_SHORT).show();
 
                             }
                         }
                     });
                 } else {
                     //Toast.makeText(RegisterActivity.this,"something went wrong",Toast.LENGTH_LONG).show();
-                    Log.d("KKK", "hiba");
+
                 }
             }
         });

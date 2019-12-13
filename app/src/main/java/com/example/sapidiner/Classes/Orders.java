@@ -3,24 +3,25 @@ package com.example.sapidiner.Classes;
 import java.util.ArrayList;
 
 public class Orders {
-    private String clientid;
+
+    private User user;
     private ArrayList<String> orders;
     private double price;
 
     public Orders(){}
 
-    public Orders(String clientid, ArrayList<String> orders, double price) {
-        this.clientid = clientid;
+    public Orders(User user, ArrayList<String> orders, double price) {
+        this.user = user;
         this.orders = orders;
         this.price = price;
     }
 
-    public String getClientid() {
-        return clientid;
+    public User getUser() {
+        return user;
     }
 
-    public void setClientid(String clientid) {
-        this.clientid = clientid;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public ArrayList<String> getOrders() {
@@ -38,4 +39,6 @@ public class Orders {
     public void setPrice(double price) {
         this.price = price;
     }
+
+
 }

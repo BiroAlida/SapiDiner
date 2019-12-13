@@ -6,13 +6,18 @@
 
     <ImageView
         android:id="@+id/foodItemImage"
-        android:layout_width="wrap_content"
-        android:src="@drawable/common_google_signin_btn_text_dark"
-        android:layout_height="wrap_content"/>
+        android:layout_width="100dp"
+        android:layout_height="100dp"/>
 
     <TextView
         android:id="@+id/foodItemName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAlignment="center"/>
+        android:padding="2dp"/>
+
+    <TextView
+        android:id="@+id/foodItemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="2dp"/>
 </LinearLayout>

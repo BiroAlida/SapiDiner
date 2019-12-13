@@ -8,7 +8,9 @@
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Orders"
+        android:text="@string/orders"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="10dp"
         android:textSize="20dp"/>
 
     <TextView
@@ -16,24 +18,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewTitle"
-        android:layout_marginTop="10dp"
-        android:text="TextView" />
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"
+         />
 
     <TextView
         android:id="@+id/textViewOrders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:layout_below="@+id/textViewId"
         android:layout_marginTop="10dp"
-        android:text="TextView" />
+        />
 
     <TextView
         android:id="@+id/textViewPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:layout_below="@+id/textViewOrders"
         android:layout_marginTop="10dp"
-        android:text="TextView" />
+        />
 
 
 

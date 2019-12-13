@@ -20,24 +20,31 @@
     <string name="regNameError">"A név mező kitöltése kötelező"</string>
     <string name="regEmailError">"Az email mező kitöltése kötelező"</string>
     <string name="loginError">"Érvénytelen felhasználónév vagy jelszó"</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="setMenu">Étlap szerkesztése</string>
+    <string name="viewMenu">Étlap</string>
     <string name="addFood">Étel hozzáadása</string>
     <string name="foodName">Étel neve</string>
     <string name="addFoodPhoto">Kép hozzáadása</string>
     <string name="gallery">Galéria</string>
     <string name="camera">Kamera</string>
-    <string name="foodCategories">"Étel kategóriák"</string>
+    <string name="foodCategories">"Kategóriák"</string>
     <string name="chooseCategory">"Válassz kategóriát!"</string>
     <string name="incorrectCategory">"Nem megfelelő kategória!"</string>
     <string name="photoError">"Kép feltöltése kötelező!"</string>
-    <string name="soupList">Levesek</string>
-    <string name="meatList">Sültek</string>
-    <string name="garnishList">Köretek</string>
-    <string name="saladList">Saláták</string>
-    <string name="dessertList">Desszertek</string>
+    <string name="foodList">Ételek</string>
     <string name="loading">Betöltés…</string>
     <string name="deleteFood">Ételek törlése</string>
+    <string name="menu">Étlap</string>
+    <string name="foodPrice">Ár</string>
+    <string name="orders">Rendelések</string>
+    <string name="emptyCart">Jelenleg nincsen megjeleníthető rendelés!</string>
+    <string name = "buttonGoBack">VISSZA</string>
+    <string name = "missingInfo">Az összes mező kitöltése kötelező</string>
+    <string name = "invalidEmail">Érvénytelen email cím</string>
+    <string name = "invalidPassword">A jelszónak legalább 6 karakterből kell állnia</string>
+    <string name = "regFailed">Sikertelen regisztráció</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

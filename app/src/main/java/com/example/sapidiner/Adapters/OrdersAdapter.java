@@ -37,7 +37,9 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
 
-        holder.userId.setText(orders.get(position).getClientid());
+        String userFirstName = orders.get(position).getUser().getFirstName();
+        String userLastName = orders.get(position).getUser().getLastName();
+        holder.userId.setText("Név: " + userFirstName + " " + userLastName);
         String o = "";
         String space = " ";
         if(orders.get(position).getOrders() != null)
@@ -50,8 +52,8 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
 
         }
 
-        holder.order.setText(o);
-        holder.price.setText("" + orders.get(position).getPrice());
+        holder.order.setText("Rendelés: " + o);
+        holder.price.setText("Ár: " + orders.get(position).getPrice() + " RON");
 
     }
 
