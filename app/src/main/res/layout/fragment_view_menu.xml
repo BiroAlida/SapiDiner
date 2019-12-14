@@ -33,9 +33,17 @@
             android:id="@+id/imageViewCart"
             android:layout_width="48dp"
             android:layout_height="40dp"
+            android:layout_marginLeft="350dp"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="280dp"
             android:src="@drawable/cart" />
+
+        <Button
+            android:id="@+id/sendOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/foodList"
+            android:layout_centerHorizontal="true"
+            android:text="@string/send" />
     </RelativeLayout>
 
 </ScrollView>

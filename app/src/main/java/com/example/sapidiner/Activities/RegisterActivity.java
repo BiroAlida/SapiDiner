@@ -10,7 +10,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.example.sapidiner.Classes.User;
+import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
+import com.example.sapidiner.Utilities;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,10 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
-
-
     private EditText et_email, et_password, et_firstName, et_lastname, et_phone;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +34,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         et_email = (EditText) findViewById(R.id.editText_useremail);
         et_password = (EditText) findViewById(R.id.editText_password);
         et_phone = (EditText) findViewById(R.id.phoneNumber);
-        mAuth = FirebaseAuth.getInstance();
-
 
         findViewById(R.id.registrationButton).setOnClickListener(this);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mAuth.getCurrentUser() != null) {
-            //handle the already login user
-        }
     }
 
     private void registerUser() {
@@ -88,28 +77,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        FirebaseDatabaseManager.Instance.getFirebaseAuth().createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // we will store the additional fields in firebase db
-                    String userId = mAuth.getCurrentUser().getUid();
-                    User user = new User(userId,firstname, lastname, phone, email, password, 0);
-                    FirebaseDatabase.getInstance().getReference("Clients").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    User user = new User(firstname, lastname, phone, email, password, 0);
+                    FirebaseDatabaseManager.Instance.getClientsReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                                 startActivity(loginIntent);
                             } else {
-                                Toast.makeText(RegisterActivity.this, getString(R.string.regFailed), Toast.LENGTH_SHORT).show();
-
+                                Utilities.displayErrorSnackbar(findViewById(R.id.viewContainer),getString(R.string.regFailed));
                             }
                         }
                     });
                 } else {
-                    //Toast.makeText(RegisterActivity.this,"something went wrong",Toast.LENGTH_LONG).show();
-
+                    Utilities.displayErrorSnackbar(findViewById(R.id.viewContainer),getString(R.string.regFailed));
                 }
             }
         });
@@ -117,10 +103,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.registrationButton:
-                registerUser();
-                break;
+        if (v.getId() == R.id.registrationButton) {
+            registerUser();
         }
     }
 }

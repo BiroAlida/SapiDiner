@@ -7,11 +7,21 @@
     tools:context=".Activities.OrderActivity">
 
 
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_margin="20dp"
+        android:text="@string/orderList"
+        android:textSize="40sp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="30dp"
-        tools:layout_editor_absoluteX="112dp"
-        tools:layout_editor_absoluteY="74dp" />
+        android:padding="5dp"
+        android:layout_below="@id/textViewTitle" />
 </RelativeLayout>

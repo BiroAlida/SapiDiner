@@ -1,40 +1,31 @@
 package com.example.sapidiner.Fragments;
 
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.sapidiner.Activities.MenuActivity;
-import com.example.sapidiner.Activities.OrderActivity;
 import com.example.sapidiner.Adapters.MenuListAdapter;
-import com.example.sapidiner.Adapters.OrdersAdapter;
 import com.example.sapidiner.Classes.Food;
-import com.example.sapidiner.Classes.Orders;
+import com.example.sapidiner.Classes.Order;
 import com.example.sapidiner.Classes.User;
 import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.sapidiner.Utilities;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -47,7 +38,8 @@ public class ViewMenuFragment extends Fragment implements View.OnClickListener {
     private ProgressDialog loadingDialog;
     private RecyclerView.Adapter adapter;
     private ImageView cartImage;
-    private String currentUserId;
+    private Button sendOrder;
+    private User currentUser;
 
 
     public ViewMenuFragment() {
@@ -66,24 +58,27 @@ public class ViewMenuFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        currentUserId =  getArguments().getString("currentUserId");
-        cartImage = getView().findViewById(R.id.imageViewCart);
-        cartImage.setOnClickListener(this);
-
-
         adapter = new MenuListAdapter(getContext(), foodList);
 
         loadingDialog = new ProgressDialog(getContext());
         loadingDialog.setMessage(getString(R.string.loading));
         loadingDialog.show();
 
-        readDataFromFirebase(new ViewMenuFragment.FirebaseCallback() {
-            @Override
-            public void onCallback() {
-                initializeMenuView();
-                loadingDialog.dismiss();
-            }
+        sendOrder = getView().findViewById(R.id.sendOrder);
+        sendOrder.setOnClickListener(this);
+        cartImage = getView().findViewById(R.id.imageViewCart);
+        cartImage.setOnClickListener(this);
+
+        getCurrentUser();
+        readDataFromFirebase(() -> {
+            initializeMenuView();
+            loadingDialog.dismiss();
         });
+    }
+
+    private void getCurrentUser() {
+        Bundle arguments = getArguments();
+        currentUser = (User) arguments.getSerializable("currentUser");
     }
 
     private void readDataFromFirebase(final ViewMenuFragment.FirebaseCallback callback) {
@@ -117,17 +112,22 @@ public class ViewMenuFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-
-        Bundle bundle=new Bundle();
-        bundle.putString("currentUserId", currentUserId);
-        Fragment newFragment = new ViewMyOrdersFragment();
-        newFragment.setArguments(bundle);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        transaction.replace(R.id.fragment_container, newFragment);
-        transaction.addToBackStack(null);
-
-        transaction.commit();
+        switch (v.getId()){
+            case R.id.imageViewCart:
+                Fragment fragment = new ViewMyOrdersFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("currentUser",currentUser);
+                fragment.setArguments(bundle);
+                ((MenuActivity) getActivity()).replaceFragment(fragment);
+                break;
+            case R.id.sendOrder:
+                if (MenuListAdapter.selectedFoodItems.size() == 0){
+                    Utilities.displayErrorSnackbar(getView(),getString(R.string.emptyOrderError));
+                } else {
+                    FirebaseDatabaseManager.Instance.addNewOrder(currentUser.getName(),new Order(currentUser, MenuListAdapter.selectedFoodItems, MenuListAdapter.totalPrice));
+                }
+                break;
+        }
     }
 
     private interface FirebaseCallback{

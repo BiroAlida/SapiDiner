@@ -1,6 +1,5 @@
 package com.example.sapidiner.Adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +8,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sapidiner.Classes.Orders;
+import com.example.sapidiner.Classes.Order;
 import com.example.sapidiner.R;
+import com.example.sapidiner.Utilities;
 
 import java.util.ArrayList;
 
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHolder> {
+    private MyViewHolder.OrderClickListener orderClickListener;
+    private ArrayList<Order> orders;
 
-
-    private Context context;
-    private ArrayList<Orders> orders;
-
-    public OrdersAdapter(Context context, ArrayList<Orders> orders) {
-        this.context = context;
+    public OrdersAdapter(ArrayList<Order> orders, MyViewHolder.OrderClickListener orderClickListener) {
         this.orders = orders;
+        this.orderClickListener = orderClickListener;
     }
 
     @NonNull
@@ -30,30 +28,17 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
 
 
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.view_orders,parent,false));
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View listItem = layoutInflater.inflate(R.layout.view_orders, parent,false);
+        MyViewHolder viewHolder = new MyViewHolder(listItem, orderClickListener);
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
-
-        String userFirstName = orders.get(position).getUser().getFirstName();
-        String userLastName = orders.get(position).getUser().getLastName();
-        holder.userId.setText("Név: " + userFirstName + " " + userLastName);
-        String o = "";
-        String space = " ";
-        if(orders.get(position).getOrders() != null)
-        {
-            for(String ord : orders.get(position).getOrders())
-            {
-
-                o = o + space + ord;
-            }
-
-        }
-
-        holder.order.setText("Rendelés: " + o);
-        holder.price.setText("Ár: " + orders.get(position).getPrice() + " RON");
+        holder.userId.setText(orders.get(position).getUser().getName());
+        holder.order.setText(Utilities.concatFoodListItems(orders.get(position).getFoodList()));
+        holder.price.setText(String.valueOf(orders.get(position).getTotalPrice()));
 
     }
 
@@ -63,15 +48,28 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView userId,order, price;
+        private OrderClickListener orderClickListener;
 
-        TextView userId,order, price;
-
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, OrderClickListener orderClickListener) {
             super(itemView);
             userId = (TextView) itemView.findViewById(R.id.textViewId);
             order = (TextView) itemView.findViewById(R.id.textViewOrders);
             price = (TextView) itemView.findViewById(R.id.textViewPrice);
+            this.orderClickListener = orderClickListener;
+            if (orderClickListener != null){
+                itemView.setOnClickListener(this);
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            orderClickListener.onOrderClick(getAdapterPosition());
+        }
+
+        public interface OrderClickListener{
+            void onOrderClick(int position);
         }
     }
 }

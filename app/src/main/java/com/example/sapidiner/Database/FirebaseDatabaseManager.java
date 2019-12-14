@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.sapidiner.Classes.Food;
-import com.example.sapidiner.Classes.Orders;
+import com.example.sapidiner.Classes.Order;
 import com.example.sapidiner.Classes.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,21 +26,20 @@ public class FirebaseDatabaseManager {
 
     public static class Instance {
         static FirebaseDatabase database = FirebaseDatabase.getInstance();
-        static DatabaseReference usersReference = database.getReference("Users");
+        static DatabaseReference clientsReference = database.getReference("Clients");
         static FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         static DatabaseReference foodsReference = database.getReference("Foods");
         static StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-
         static DatabaseReference ordersReference = database.getReference("Orders");
 
 
-        public static void addNewOrder(String key, Orders order) {
+        public static void addNewOrder(String key, Order order) {
             ordersReference.child(key).setValue(order);
         }
 
 
         public static void addNewUser(String key,User user) {
-            usersReference.child(key).setValue(user);
+            clientsReference.child(key).setValue(user);
         }
 
         public static FirebaseAuth getFirebaseAuth() {
@@ -55,11 +54,15 @@ public class FirebaseDatabaseManager {
             return database;
         }
 
-        public static DatabaseReference getUsersReference() {
-            return usersReference;
+        public static DatabaseReference getClientsReference() {
+            return clientsReference;
         }
         public static DatabaseReference getFoodsReference() {
             return foodsReference;
+        }
+
+        public static DatabaseReference getOrdersReference() {
+            return ordersReference;
         }
 
         public static void addFood(Food food){
@@ -89,6 +92,12 @@ public class FirebaseDatabaseManager {
 
                 }
             });
+        }
+
+        public static void deleteFoodFromStorage(ArrayList<Food> foodList){
+            for (Food food : foodList){
+                getStorageReference().child(food.getName()).delete();
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.sapidiner.Adapters.OrdersAdapter;
-import com.example.sapidiner.Classes.Orders;
+import com.example.sapidiner.Classes.Order;
+import com.example.sapidiner.Classes.User;
+import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,12 +33,11 @@ import java.util.ArrayList;
 public class ViewMyOrdersFragment extends Fragment {
 
     private View view;
-    private Orders orderObject;
     private RecyclerView rw;
-    private ArrayList<Orders> listOfOrders = new ArrayList<>();
+    private ArrayList<Order> listOfOrders = new ArrayList<>();
     private OrdersAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private String currentUserId;
+    private User currentUser;
     private TextView cartIsEmpty;
     private Button goBackButton;
 
@@ -55,14 +57,10 @@ public class ViewMyOrdersFragment extends Fragment {
         goBackButton = view.findViewById(R.id.buttonGoBack);
         goBackButton.setVisibility(View.INVISIBLE);
 
-        currentUserId =  getArguments().getString("currentUserId");
-        readData(new FirebaseCallback() {
-            @Override
-            public void onCallback(ArrayList<Orders> list) {
+        Bundle arguments = getArguments();
+        currentUser = (User) arguments.getSerializable("currentUser");
 
-                listingUserOrders();
-            }
-        });
+        readData(list -> listingUserOrders());
 
         return view;
     }
@@ -74,55 +72,28 @@ public class ViewMyOrdersFragment extends Fragment {
             layoutManager = new LinearLayoutManager(getContext());
             rw.setLayoutManager(layoutManager);
             rw.addItemDecoration(new DividerItemDecoration(rw.getContext(), DividerItemDecoration.VERTICAL));
-            adapter = new OrdersAdapter(getContext(), listOfOrders);
+            adapter = new OrdersAdapter(listOfOrders,null);
             rw.setAdapter(adapter);
         } else {
             cartIsEmpty.setVisibility(View.VISIBLE);
             goBackButton.setVisibility(View.VISIBLE);
-            goBackButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.popBackStack();
-                }
+            goBackButton.setOnClickListener(v -> {
+                FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.popBackStack();
             });
         }
     }
 
-/* finds the current users order in the Orders table
+/* finds the current users order in the Order table
     which will be given to the recycler view
 *  */
     void readData(final FirebaseCallback callback) {
-
-        FirebaseDatabase.getInstance().getReference("Orders").addValueEventListener(new ValueEventListener() {
+        listOfOrders.clear();
+        FirebaseDatabaseManager.Instance.getOrdersReference().child(currentUser.getName()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                listOfOrders.clear();
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren())
-                {
-
-                    for(DataSnapshot users : postSnapshot.getChildren())
-                    {
-                        if(users.getKey().equals("user"))
-                        {
-                            for(DataSnapshot clientid : users.getChildren())
-                            {
-                                if(clientid.getKey().equals("userId"))
-                                {
-                                    if(clientid.getValue().equals(currentUserId))
-                                    {
-                                        orderObject = postSnapshot.getValue(Orders.class);
-                                        listOfOrders.add(orderObject);
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                }
-
+                Order orderObject = dataSnapshot.getValue(Order.class);
+                listOfOrders.add(orderObject);
                 callback.onCallback(listOfOrders);
             }
 
@@ -133,13 +104,8 @@ public class ViewMyOrdersFragment extends Fragment {
         });
     }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     private interface FirebaseCallback{
-        void onCallback(ArrayList<Orders> list);
+        void onCallback(ArrayList<Order> list);
     }
 
 }

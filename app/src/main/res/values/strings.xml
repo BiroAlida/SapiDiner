@@ -36,15 +36,15 @@
     <string name="deleteFood">Ételek törlése</string>
     <string name="menu">Étlap</string>
     <string name="foodPrice">Ár</string>
-    <string name="orders">Rendelések</string>
+    <string name="orderList">Rendelések</string>
     <string name="emptyCart">Jelenleg nincsen megjeleníthető rendelés!</string>
     <string name = "buttonGoBack">VISSZA</string>
     <string name = "missingInfo">Az összes mező kitöltése kötelező</string>
     <string name = "invalidEmail">Érvénytelen email cím</string>
     <string name = "invalidPassword">A jelszónak legalább 6 karakterből kell állnia</string>
     <string name = "regFailed">Sikertelen regisztráció</string>
-
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="orderFinished">A rendelés elkészült!</string>
+    <string name="emptyOrderError">"Üres rendelés nem küldhető!"</string>
+    <string name="selectPicture">"Kép kiválasztása"</string>
+    <string name="errorText">"Hiba történt, próbálja újra!</string>
 </resources>

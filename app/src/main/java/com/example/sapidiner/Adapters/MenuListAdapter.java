@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 //import com.bumptech.glide;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sapidiner.Classes.Food;
 import com.example.sapidiner.Database.FirebaseDatabaseManager;
 import com.example.sapidiner.R;
@@ -23,6 +25,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ListVi
     private Context context;
     private ArrayList<Food> foodList;
     public static ArrayList<Food> selectedFoodItems = new ArrayList<>();
+    public static double totalPrice = 0;
 
     public MenuListAdapter(Context context, ArrayList<Food> foodList) {
         this.context = context;
@@ -40,39 +43,38 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ListVi
 
     @Override
     public void onBindViewHolder(@NonNull final ListViewHolder holder, final int position) {
-        loadImage(foodList.get(position).getName(), holder.foodImage, new FirebaseCallback() {
+        holder.foodImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCallback() {
-                holder.foodImage.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (v.getBackground() == null){
-                            v.setBackgroundResource(R.drawable.photo_highlight);
-                            selectedFoodItems.add(foodList.get(position));
-                        } else {
-                            v.setBackgroundResource(0);
-                            selectedFoodItems.remove(foodList.get(position));
-                        }
-                    }
-                });
+            public void onClick(View v) {
+                if (v.getBackground() == null){
+                    //highlight selected item
+                    v.setBackgroundResource(R.drawable.photo_highlight);
+                    selectedFoodItems.add(foodList.get(position));
+                    totalPrice = totalPrice + foodList.get(position).getPrice();
+                } else {
+                    //remove highlight
+                    v.setBackgroundResource(0);
+                    selectedFoodItems.remove(foodList.get(position));
+                    totalPrice = totalPrice - foodList.get(position).getPrice();
+                }
             }
         });
+
+        loadImage(foodList.get(position).getName(), holder.foodImage);
         holder.foodName.setText(foodList.get(position).getName());
         holder.foodPrice.setText(String.valueOf(foodList.get(position).getPrice()));
     }
 
-    private void loadImage(String foodName, final ImageView imageView, final FirebaseCallback callback){
+    private void loadImage(String foodName, final ImageView imageView){
         FirebaseDatabaseManager.Instance.getStorageReference().child(foodName).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                //.with(context).load(uri.toString()).into(imageView);
-                callback.onCallback();
+                Glide.with(context)
+                        .load(uri.toString())
+                        .apply(new RequestOptions().placeholder(R.drawable.image_placeholder))
+                        .into(imageView);
             }
         });
-    }
-
-    private interface FirebaseCallback{
-        void onCallback();
     }
 
     @Override

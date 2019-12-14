@@ -10,14 +10,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -30,6 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.sapidiner.Activities.OrderActivity;
 import com.example.sapidiner.Adapters.MenuListAdapter;
 import com.example.sapidiner.Classes.Food;
 import com.example.sapidiner.Database.FirebaseDatabaseManager;
@@ -74,26 +74,25 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         addFood.setOnClickListener(this);
         Button deleteFood = view.findViewById(R.id.deleteFood);
         deleteFood.setOnClickListener(this);
+        Button viewOrders = view.findViewById(R.id.viewOrders);
+        viewOrders.setOnClickListener(this);
         adapter = new MenuListAdapter(getContext(), foodList);
 
         loadingDialog = new ProgressDialog(getContext());
         loadingDialog.setMessage(getString(R.string.loading));
         loadingDialog.show();
 
-        readDataFromFirebase(new FirebaseCallback() {
-            @Override
-            public void onCallback() {
-                initializeMenuView();
-                loadingDialog.dismiss();
-            }
+        readDataFromFirebase(() -> {
+            initializeMenuView();
+            loadingDialog.dismiss();
         });
     }
 
     private void readDataFromFirebase(final FirebaseCallback callback) {
-        foodList.clear();
         FirebaseDatabaseManager.Instance.getFoodsReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                foodList.clear();
                 for (DataSnapshot foodData : dataSnapshot.getChildren()){
                     Food food = foodData.getValue(Food.class);
                     foodList.add(food);
@@ -112,7 +111,6 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
 
     private void initializeMenuView() {
         RecyclerView foodListView = getView().findViewById(R.id.foodList);
-        foodListView.setNestedScrollingEnabled(false);
         foodListView.setLayoutManager(new GridLayoutManager(getContext(),3));
         foodListView.setAdapter(adapter);
     }
@@ -142,17 +140,19 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
                 uploadImageDialog.dismiss();
                 break;
             case R.id.deleteFood:
-                //FirebaseDatabaseManager.Instance.deleteFoodsFromDatabase(MenuListAdapter.selectedFoodItems);
                 deleteFoods(MenuListAdapter.selectedFoodItems);
+                break;
+            case R.id.viewOrders:
+                startActivity(new Intent(getActivity(),OrderActivity.class));
+                break;
         }
     }
 
     private void deleteFoods(ArrayList<Food> selectedFoodItems) {
-        for (Food food : selectedFoodItems){
-            if (foodList.contains(food)){
-                Log.d("foodD",food.getName());
-            }
-        }
+        foodList.removeAll(selectedFoodItems);
+        adapter.notifyDataSetChanged();
+        FirebaseDatabaseManager.Instance.deleteFoodsFromDatabase(selectedFoodItems);
+        FirebaseDatabaseManager.Instance.deleteFoodFromStorage(selectedFoodItems);
     }
 
     @Override
@@ -198,6 +198,7 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         TextView imageName = dialogView.findViewById(R.id.imageName);
         switch (requestCode){
             case 0:
+                //loading image from gallery
                 if (resultCode == RESULT_OK && data != null && data.getData() != null){
                     imagePath = data.getData();
 
@@ -208,6 +209,7 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
                 }
                 break;
             case 1:
+                //loading image from camera
                 if (resultCode == RESULT_OK){
                     Cursor cursor = getActivity().getContentResolver().query(imagePath, new String[]{MediaStore.Images.Media.DATA}, null,null,null);
                     cursor.moveToFirst();
@@ -229,22 +231,14 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         foodCategories.setOnItemSelectedListener(this);
 
         alertDialog.setTitle(getString(R.string.addFood));
-        alertDialog.setPositiveButton(getString(R.string.send), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (validateInputs()){
-                    FirebaseDatabaseManager.Instance.uploadImage(name,imagePath);
-                    FirebaseDatabaseManager.Instance.addFood(new Food(name, Integer.parseInt(price),category));
-                    foodList.clear();
-                }
+        alertDialog.setPositiveButton(getString(R.string.send), (dialogInterface, i) -> {
+            if (validateInputs()){
+                FirebaseDatabaseManager.Instance.uploadImage(name,imagePath);
+                FirebaseDatabaseManager.Instance.addFood(new Food(name, Integer.parseInt(price),category));
+                foodList.clear();
             }
         });
-        alertDialog.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        alertDialog.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss());
 
         alertDialog.show();
     }
@@ -258,7 +252,7 @@ public class SetMenuFragment extends Fragment implements View.OnClickListener, A
         price = foodPrice.getText().toString().trim();
 
         if (name.isEmpty()) {
-            // todo Utilities.displayErrorSnackbar(dialogView,);
+            Utilities.displayErrorSnackbar(dialogView,getString(R.string.nameInputError));
             return false;
         }
 

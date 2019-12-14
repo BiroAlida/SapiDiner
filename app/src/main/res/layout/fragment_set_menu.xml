@@ -8,8 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/setMenuTitle"
@@ -22,7 +21,7 @@
             android:layout_marginTop="60dp"/>
 
         <Button
-            android:id="@+id/addFood"
+            android:id="@+id/viewOrders"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/setMenuTitle"
@@ -30,7 +29,19 @@
             android:layout_alignParentLeft="true"
             android:layout_marginStart="270dp"
             android:layout_marginLeft="270dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/orderList" />
+
+        <Button
+            android:id="@+id/addFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewOrders"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="270dp"
+            android:layout_marginLeft="270dp"
+            android:layout_marginTop="10dp"
             android:text="@string/addFood" />
 
         <TextView
