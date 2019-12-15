@@ -20,7 +20,7 @@ public class Utilities {
         String foods = "";
         for(Food foodItem : foodList)
         {
-            foods = foods.concat(foodItem.getName()).concat(", ");
+            foods = foods.concat(foodItem.getName()).concat(" ");
         }
         return foods;
     }
