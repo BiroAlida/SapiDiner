@@ -1,13 +1,20 @@
 package com.example.sapidiner.Database;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.sapidiner.Classes.Food;
 import com.example.sapidiner.Classes.Order;
 import com.example.sapidiner.Classes.User;
+import com.example.sapidiner.Fragments.ViewMenuFragment;
+import com.example.sapidiner.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,8 +40,14 @@ public class FirebaseDatabaseManager {
         static DatabaseReference ordersReference = database.getReference("Orders");
 
 
-        public static void addNewOrder(String key, Order order) {
-            ordersReference.child(key).setValue(order);
+        public static void addNewOrder(Context context,String key, Order order) {
+            ordersReference.child(key).setValue(order).addOnCompleteListener(task -> {
+                if (task.isSuccessful()){
+                    Toast.makeText(context,R.string.orderSuccessful,Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context,R.string.errorText,Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
 

@@ -2,8 +2,11 @@ package com.example.sapidiner.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,9 +22,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements View.OnClickListener {
     private String currentUserId;
     private ProgressDialog loadingDialog;
+    private TextView logOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,9 @@ public class MenuActivity extends AppCompatActivity {
         loadingDialog.setMessage(getString(R.string.loading));
         loadingDialog.setCanceledOnTouchOutside(false);
         loadingDialog.show();
+
+        logOut = findViewById(R.id.logoutText);
+        logOut.setOnClickListener(this);
 
         readCurrentUserData(user -> {
             if (user.getUserType() == Utilities.ADMIN) { // check if admin
@@ -66,6 +73,15 @@ public class MenuActivity extends AppCompatActivity {
                 Log.d("MenuActivity::onCancelled", databaseError.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        FirebaseDatabaseManager.Instance.getFirebaseAuth().signOut();
+
+        //go to login screen
+        Intent login = new Intent(MenuActivity.this, LoginActivity.class);
+        startActivity(login);
     }
 
 

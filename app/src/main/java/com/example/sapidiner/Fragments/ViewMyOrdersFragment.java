@@ -88,12 +88,15 @@ public class ViewMyOrdersFragment extends Fragment {
     which will be given to the recycler view
 *  */
     void readData(final FirebaseCallback callback) {
-        listOfOrders.clear();
         FirebaseDatabaseManager.Instance.getOrdersReference().child(currentUser.getName()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                listOfOrders.clear();
                 Order orderObject = dataSnapshot.getValue(Order.class);
-                listOfOrders.add(orderObject);
+                if (orderObject != null){
+                    listOfOrders.add(orderObject);
+                }
                 callback.onCallback(listOfOrders);
             }
 

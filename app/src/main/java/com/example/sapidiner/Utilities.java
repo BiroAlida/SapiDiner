@@ -1,6 +1,8 @@
 package com.example.sapidiner;
 
+import android.app.Activity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.content.ContextCompat;
 
@@ -23,5 +25,13 @@ public class Utilities {
             foods = foods.concat(foodItem.getName()).concat(" ");
         }
         return foods;
+    }
+
+    public static void hideKeyboard (Activity activity){
+        if (activity.getCurrentFocus() != null){
+            //if keyboard is visible
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }

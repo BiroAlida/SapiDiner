@@ -47,4 +47,6 @@
     <string name="emptyOrderError">"Üres rendelés nem küldhető!"</string>
     <string name="selectPicture">"Kép kiválasztása"</string>
     <string name="errorText">"Hiba történt, próbálja újra!</string>
+    <string name="logOut">Kijelentkezés</string>
+    <string name="orderSuccessful">"Rendelés elküldve!"</string>
 </resources>
